@@ -1,0 +1,33 @@
+-- Purchase invoice sequence
+CREATE SEQUENCE PINVOICE_SEQ
+  START WITH 1 -- The initial value for the sequence
+  INCREMENT BY 1 -- The increment value, in this case, it will auto-increment by 1
+  MINVALUE 1 -- The minimum value the sequence can have
+  MAXVALUE 9999999999 -- The maximum value the sequence can have
+  NOCYCLE; -- Specify NOCYCLE to prevent the sequence from cycling back to the MINVALUE after reaching the MAXVALUE.
+
+CREATE OR REPLACE TRIGGER PINVOICE_ON_INSERT
+  BEFORE INSERT ON PINVOICE
+  FOR EACH ROW
+DECLARE
+BEGIN
+  :new.PINV_REF:=CONCAT('INV',TO_CHAR(SUPPLIER_SEQ.NEXTVAL,'fm00000'));
+END;
+
+DROP TABLE PINVOICEL;
+DROP TABLE PINVOICE;
+
+CREATE TABLE PINVOICE(                
+PINV_REF        VARCHAR(8)  UNIQUE,      
+INVPO_REF       VARCHAR(12) NOT NULL,
+INV_DATE		DATE        NOT NULL,
+SUPPLIER_REF    VARCHAR(10) NOT NULL,
+INV_AMOUNT	    NUMBER      NOT NULL,
+DESCRIPTION	    VARCHAR(50),
+CONSTRAINT PK_PINVOICE
+    PRIMARY KEY (INVPO_REF,INV_DATE),
+CONSTRAINT FK_PINV_SUP
+    FOREIGN KEY (SUPPLIER_REF) 
+    REFERENCES SUPPLIER(SUPPLIER_REF)
+);
+
